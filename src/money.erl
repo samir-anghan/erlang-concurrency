@@ -27,7 +27,10 @@ readCustomersFromFile() ->
 spawnCustomers(Customer) ->
   Name = element(1, Customer),
   LoanObjective = element(2, Customer),
-  io:fwrite("~w: ~w~n", [Name, LoanObjective]).
+  io:fwrite("~w: ~w~n", [Name, LoanObjective]),
+  timer:sleep(100),
+  Pid = spawn(customer, initCustomerProcess, [Customer]),
+  register(element(1, Customer), Pid).
 
 readBanksFromFile() ->
   {ok, Banks} = file:consult("banks.txt"),
@@ -39,4 +42,7 @@ readBanksFromFile() ->
 spawnBanks(Bank) ->
   Name = element(1, Bank),
   FinancialResources = element(2, Bank),
-  io:fwrite("~w: ~w~n", [Name, FinancialResources]).
+  io:fwrite("~w: ~w~n", [Name, FinancialResources]),
+  timer:sleep(100),
+  Pid = spawn(bank, initBankProcess, [Bank]),
+  register(element(1, Bank), Pid).
