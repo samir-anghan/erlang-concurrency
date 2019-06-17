@@ -2,15 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="df18c4f6-e891-4e2b-91fa-069c91b61122" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/ErlangConcurrency/bank.beam" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/ErlangConcurrency/bank.beam" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/ErlangConcurrency/customer.beam" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/ErlangConcurrency/customer.beam" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/ErlangConcurrency/bank.beam" beforeDir="false" afterPath="$PROJECT_DIR$/out/test/ErlangConcurrency/bank.beam" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/ErlangConcurrency/customer.beam" beforeDir="false" afterPath="$PROJECT_DIR$/out/test/ErlangConcurrency/customer.beam" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/bank.erl" beforeDir="false" afterPath="$PROJECT_DIR$/src/bank.erl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/banks.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/banks.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/customer.erl" beforeDir="false" afterPath="$PROJECT_DIR$/src/customer.erl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/money.erl" beforeDir="false" afterPath="$PROJECT_DIR$/src/money.erl" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -36,19 +28,19 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/customer.erl">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="7" column="16" lean-forward="true" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
+            <state relative-caret-position="375">
+              <caret line="68" column="37" selection-start-line="68" selection-start-column="37" selection-end-line="68" selection-end-column="37" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/bank.erl">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="199">
+            <state relative-caret-position="56">
               <caret line="17" column="22" lean-forward="true" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
             </state>
           </provider>
@@ -95,8 +87,8 @@
         <option value="$PROJECT_DIR$/bank.erl" />
         <option value="$PROJECT_DIR$/src/banks.txt" />
         <option value="$PROJECT_DIR$/src/money.erl" />
-        <option value="$PROJECT_DIR$/src/customer.erl" />
         <option value="$PROJECT_DIR$/src/bank.erl" />
+        <option value="$PROJECT_DIR$/src/customer.erl" />
       </list>
     </option>
   </component>
@@ -284,12 +276,12 @@
       <updated>1560449420326</updated>
       <workItem from="1560449424107" duration="527000" />
       <workItem from="1560449966936" duration="55399000" />
-      <workItem from="1560724059387" duration="15976000" />
+      <workItem from="1560724059387" duration="16473000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="71902000" />
+    <option name="totallyTimeSpent" value="72399000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="824" extended-state="0" />
@@ -417,10 +409,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/banks.txt">
+    <entry file="file://$PROJECT_DIR$/src/bank.erl">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="6" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
+        <state relative-caret-position="56">
+          <caret line="17" column="22" lean-forward="true" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
         </state>
       </provider>
     </entry>
@@ -431,17 +423,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/customer.erl">
+    <entry file="file://$PROJECT_DIR$/src/banks.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="7" column="16" lean-forward="true" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
+        <state relative-caret-position="34">
+          <caret line="2" column="6" selection-start-line="2" selection-start-column="6" selection-end-line="2" selection-end-column="6" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/bank.erl">
+    <entry file="file://$PROJECT_DIR$/src/customer.erl">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="199">
-          <caret line="17" column="22" lean-forward="true" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
+        <state relative-caret-position="375">
+          <caret line="68" column="37" selection-start-line="68" selection-start-column="37" selection-end-line="68" selection-end-column="37" />
         </state>
       </provider>
     </entry>

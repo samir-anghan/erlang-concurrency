@@ -55,15 +55,18 @@ requestLoan(Customer, PotentialBanksList) ->
   TargetBank = bank:getRandomBank(PotentialBanksList),
   TargetBankName = element(1, TargetBank),
   TargetBankId = whereis(TargetBankName),
+  SleepDuration = rand:uniform(100),
   if
     RequiredLoanAmount >= 50 ->
       Amount = rand:uniform(50),
+      timer:sleep(SleepDuration),
       TargetBankId ! {self(), {Customer, Amount, TargetBank}};
     true ->
       if
         RequiredLoanAmount =< 0 -> done;
         true ->
           AmountRand = rand:uniform(RequiredLoanAmount),
+          timer:sleep(SleepDuration),
           TargetBankId ! {self(), {Customer, AmountRand, TargetBank}}
       end
   end,
