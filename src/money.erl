@@ -17,10 +17,11 @@ master() ->
   customer:initCustomers(),
   bank:initBanks(),
   customer:iteratorCustomerTable(customertable),
-  timer:sleep(2000),
-  io:fwrite("~n~n ----- PROGRAM END ------~n~n"),
-  printTable(customertable),
-  printTable(banktable).
+  timer:sleep(1000),
+  bank:printBankBalance(banktable).
+%%  printTable(customertable),
+%%  printTable(banktable).
+
 
 
 printTable(Table) ->

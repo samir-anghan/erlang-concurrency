@@ -10,7 +10,7 @@
 -author("Samir").
 
 %% API
--export([initBanks/0, generateBankProcess/1, getRandomBank/0, startReceivingLoanRequests/0, processLoanRequest/4]).
+-export([initBanks/0, generateBankProcess/1, getRandomBank/1, processLoanRequest/4, printBankBalance/1, printBankBalance/2]).
 
 initBanks() ->
   readBanksFromFile().
@@ -30,22 +30,11 @@ spawnBanks(Bank) ->
   io:fwrite("~w: ~w~n", [Name, FinancialResources]),
   timer:sleep(100),
   Pid = spawn(bank, generateBankProcess, [Bank]),
-  register(element(1, Bank), Pid),
-  io:fwrite("~w PID: ~w~n", [Name, Pid]).
+  register(element(1, Bank), Pid).
 
-getRandomBank() ->
-  {ok, Banks} = file:consult("/Users/Dev/git/ErlangConcurrency/src/banks.txt"),
-  Index = rand:uniform(length(Banks)),
-  lists:nth(Index,Banks).
-%%  RandomList = lists:nth(Index,Banks),
-%%  element(1,RandomList).
-
-startReceivingLoanRequests() ->
-  receive
-    {Customer, Amount, Bank} ->
-      io:fwrite("Customer Name:~w Amount:~w Bank:~w~n", [Customer, Amount, Bank]),
-      startReceivingLoanRequests()
-  end.
+getRandomBank(PotentialBanksList) ->
+  Index = rand:uniform(length(PotentialBanksList)),
+  lists:nth(Index,PotentialBanksList).
 
 generateBankProcess(Bank) ->
   BankName = element(1, Bank),
@@ -61,19 +50,16 @@ processLoanRequest(Sender, Customer, Amount, TargetBank) ->
   TargetBankName = element(1, TargetBank),
   [TargetBankRecord] = ets:lookup(banktable, TargetBankName),
   CurrentBankBalanceInTargetBank = element(2, TargetBankRecord),
-  io:fwrite("Currernt balance in ~w is:~w~n", [TargetBankName, CurrentBankBalanceInTargetBank]),
   CustomerName = element(1, Customer),
   [RequiredLoanAmountRecord] = ets:lookup(customertable, CustomerName),
   RequiredLoanAmount = element(2, RequiredLoanAmountRecord),
+  NewBalance = CurrentBankBalanceInTargetBank - Amount,
   if
-    CurrentBankBalanceInTargetBank > 0 ->
-      NewBalance = CurrentBankBalanceInTargetBank - Amount,
+    NewBalance > 0 ->
       NewRequiredLoanAmount = RequiredLoanAmount - Amount,
       ets:insert(banktable, {TargetBankName, NewBalance}),
       ets:insert(customertable, {CustomerName, NewRequiredLoanAmount}),
-      io:fwrite("New balance:~w~n",[ets:lookup(banktable, TargetBankName)]),
-      io:fwrite("New Required Loan Amount:~w~n",[ets:lookup(customertable, CustomerName)]),
-      io:fwrite("~w approves a loan of ~w dollars(s) for ~w~n~n", [TargetBankName, Amount, element(1, Customer)]),
+      io:fwrite("~w approves a loan of ~w dollars(s) for ~w~n", [TargetBankName, Amount, element(1, Customer)]),
       if
         NewRequiredLoanAmount =< 0 ->
           io:fwrite("~w has reached the objective of ~w dollar(s). Woo Hoo!~n",[CustomerName, element(2, Customer)]);
@@ -82,8 +68,14 @@ processLoanRequest(Sender, Customer, Amount, TargetBank) ->
       end,
       Sender ! loanapproved;
     true ->
-%%      OriginalLoanObjective = element(2, Customer),
-%%      TotalLoanApproved = OriginalLoanObjective - RequiredLoanAmount,
-%%      io:fwrite("~w was only able to borrow ~w dollar(s). Boo Hoo!~n", [CustomerName, TotalLoanApproved]),
-      Sender ! loanapproved
+      io:fwrite("~w denies a loan of ~w dollars from ~w~n", [TargetBankName, Amount, CustomerName]),
+      Sender ! loannotapproved
   end.
+
+printBankBalance(Table) ->
+  printBankBalance(Table, ets:first(Table)).
+printBankBalance(_Table, '$end_of_table') -> done;
+printBankBalance(Table, Key) ->
+  [DollarsRemainingRecord] = ets:lookup(Table, Key),
+  io:fwrite("~p has ~w dollar(s) remaining.~n",[Key, element(2, DollarsRemainingRecord)]),
+  printBankBalance(Table, ets:next(Table, Key)).

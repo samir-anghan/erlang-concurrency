@@ -10,7 +10,7 @@
 -author("Samir").
 
 %% API
--export([initCustomers/0, generateCustomerProcess/1, requestLoan/1, iteratorCustomerTable/1, iteratorCustomerTable/2]).
+-export([initCustomers/0, generateCustomerProcess/1, requestLoan/2, iteratorCustomerTable/1, iteratorCustomerTable/2]).
 
 initCustomers() ->
   readCustomersFromFile().
@@ -22,7 +22,6 @@ readCustomersFromFile() ->
   CustomersIterator = fun(CustomerElement) -> spawnCustomers(CustomerElement) end,
   lists:foreach(CustomersIterator, Customers),
   io:fwrite("~n").
-%%  startConcurrentLoanRequests().
 
 spawnCustomers(Customer) ->
   Name = element(1, Customer),
@@ -31,38 +30,29 @@ spawnCustomers(Customer) ->
   io:fwrite("~w: ~w~n", [Name, LoanObjective]),
   timer:sleep(100),
   Pid = spawn(customer, generateCustomerProcess, [Customer]),
-  register(element(1, Customer), Pid),
-  io:fwrite("~w PID: ~w~n", [Name, Pid]).
+  register(element(1, Customer), Pid).
 
 generateCustomerProcess(Customer) ->
   CustomerName = element(1, Customer),
   LoanObjective = element(2, Customer).
 
-
-%%startConcurrentLoanRequests() ->
-%%  {ok, Customers} = file:consult("/Users/Dev/git/ErlangConcurrency/src/customers.txt"),
-%%  CustomersIterator = fun(CustomerElement) -> spawnLoanRequests(CustomerElement) end,
-%%  lists:foreach(CustomersIterator, Customers).
-
 iteratorCustomerTable(Table) ->
   iteratorCustomerTable(Table, ets:first(Table)).
 iteratorCustomerTable(_Table, '$end_of_table') -> done;
 iteratorCustomerTable(Table, Key) ->
-  io:format("~p: ~p~n", [Key, ets:lookup(Table, Key)]),
   [Customer] = ets:lookup(Table, Key),
   spawnLoanRequests(Customer),
   iteratorCustomerTable(Table, ets:next(Table, Key)).
 
 spawnLoanRequests(Customer) ->
-  Pid = spawn(customer, requestLoan, [Customer]),
-  io:fwrite("Loan request PID: ~w~n", [Pid]),
-  io:fwrite("~n").
+  {ok, PotentialBanksList} = file:consult("/Users/Dev/git/ErlangConcurrency/src/banks.txt"),
+  Pid = spawn(customer, requestLoan, [Customer, PotentialBanksList]).
 
-requestLoan(Customer) ->
+requestLoan(Customer, PotentialBanksList) ->
   CustomerName = element(1, Customer),
   [RequiredLoanAmountRecord] = ets:lookup(customertable, CustomerName),
   RequiredLoanAmount = element(2, RequiredLoanAmountRecord),
-  TargetBank = bank:getRandomBank(),
+  TargetBank = bank:getRandomBank(PotentialBanksList),
   TargetBankName = element(1, TargetBank),
   TargetBankId = whereis(TargetBankName),
   if
@@ -73,7 +63,6 @@ requestLoan(Customer) ->
       if
         RequiredLoanAmount =< 0 -> done;
         true ->
-          io:fwrite("RequiredLoanAmount: ~w~n", [RequiredLoanAmount]),
           AmountRand = rand:uniform(RequiredLoanAmount),
           TargetBankId ! {self(), {Customer, AmountRand, TargetBank}}
       end
@@ -82,10 +71,19 @@ requestLoan(Customer) ->
     loanapproved ->
       if
         RequiredLoanAmount > 0 ->
-          requestLoan(Customer);
+          requestLoan(Customer, PotentialBanksList);
         true ->
           done
       end;
     loannotapproved ->
-      done
+      NewPotentialBanksList = lists:delete(TargetBank, PotentialBanksList),
+      LengthOfList = length(NewPotentialBanksList),
+      if
+        LengthOfList > 0 ->
+          requestLoan(Customer, NewPotentialBanksList);
+        true ->
+          OriginalLoanObjective = element(2, Customer),
+          TotalLoanApproved = OriginalLoanObjective - RequiredLoanAmount,
+          io:fwrite("~w was only able to borrow ~w dollar(s). Boo Hoo!~n", [CustomerName, TotalLoanApproved])
+      end
   end.
