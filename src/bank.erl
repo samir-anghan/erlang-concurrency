@@ -17,7 +17,7 @@ initBanks() ->
 
 readBanksFromFile() ->
   BankTable = ets:new(banktable, [named_table, set, public]),
-  {ok, Banks} = file:consult("/Users/Dev/git/ErlangConcurrency/src/banks.txt"),
+  {ok, Banks} = file:consult("banks.txt"),
   io:fwrite("** Banks and financial resources **~n"),
   BanksIterator = fun(BankElement) -> spawnBanks(BankElement) end,
   lists:foreach(BanksIterator, Banks),
@@ -40,7 +40,11 @@ generateBankProcess(Bank) ->
   BankName = element(1, Bank),
   receive
     {Sender, {Customer, Amount, TargetBank}} ->
-      io:fwrite("~w requested a loan of ~w dollar(s) from ~w~n", [element(1,Customer), Amount, element(1, TargetBank)]),
+      CustomerName = element(1,Customer),
+      TargetBankName = element(1, TargetBank),
+      MasterPid = whereis(masterprocess),
+      MasterPid ! {loanrequest, CustomerName, Amount, TargetBankName},
+%%      io:fwrite("~w requested a loan of ~w dollar(s) from ~w~n", [element(1,Customer), Amount, element(1, TargetBank)]),
       FinancialResources = element(2, TargetBank),
       processLoanRequest(Sender, Customer, Amount, TargetBank),
       generateBankProcess(Bank)
@@ -59,16 +63,23 @@ processLoanRequest(Sender, Customer, Amount, TargetBank) ->
       NewRequiredLoanAmount = RequiredLoanAmount - Amount,
       ets:insert(banktable, {TargetBankName, NewBalance}),
       ets:insert(customertable, {CustomerName, NewRequiredLoanAmount}),
-      io:fwrite("~w approves a loan of ~w dollars(s) for ~w~n", [TargetBankName, Amount, element(1, Customer)]),
+      MasterPid = whereis(masterprocess),
+      MasterPid ! {loangranted, TargetBankName, Amount, CustomerName},
+%%      io:fwrite("~w approves a loan of ~w dollars(s) for ~w~n", [TargetBankName, Amount, element(1, Customer)]),
       if
         NewRequiredLoanAmount =< 0 ->
-          io:fwrite("~w has reached the objective of ~w dollar(s). Woo Hoo!~n",[CustomerName, element(2, Customer)]);
+          LoanObjective = element(2, Customer),
+          MasterPid = whereis(masterprocess),
+          MasterPid ! {reachedobjective, CustomerName, LoanObjective};
+%%          io:fwrite("~w has reached the objective of ~w dollar(s). Woo Hoo!~n",[CustomerName, element(2, Customer)]);
         true ->
           done
       end,
       Sender ! loanapproved;
     true ->
-      io:fwrite("~w denies a loan of ~w dollars from ~w~n", [TargetBankName, Amount, CustomerName]),
+      MasterPid = whereis(masterprocess),
+      MasterPid ! {loanrejected, TargetBankName, Amount, CustomerName},
+%%      io:fwrite("~w denies a loan of ~w dollars from ~w~n", [TargetBankName, Amount, CustomerName]),
       Sender ! loannotapproved
   end.
 

@@ -17,7 +17,7 @@ initCustomers() ->
 
 readCustomersFromFile() ->
   CustomerTable = ets:new(customertable, [named_table, set, public]),
-  {ok, Customers} = file:consult("/Users/Dev/git/ErlangConcurrency/src/customers.txt"),
+  {ok, Customers} = file:consult("customers.txt"),
   io:fwrite("** Customers and loan objctives **~n"),
   CustomersIterator = fun(CustomerElement) -> spawnCustomers(CustomerElement) end,
   lists:foreach(CustomersIterator, Customers),
@@ -45,7 +45,7 @@ iteratorCustomerTable(Table, Key) ->
   iteratorCustomerTable(Table, ets:next(Table, Key)).
 
 spawnLoanRequests(Customer) ->
-  {ok, PotentialBanksList} = file:consult("/Users/Dev/git/ErlangConcurrency/src/banks.txt"),
+  {ok, PotentialBanksList} = file:consult("banks.txt"),
   Pid = spawn(customer, requestLoan, [Customer, PotentialBanksList]).
 
 requestLoan(Customer, PotentialBanksList) ->
@@ -87,6 +87,8 @@ requestLoan(Customer, PotentialBanksList) ->
         true ->
           OriginalLoanObjective = element(2, Customer),
           TotalLoanApproved = OriginalLoanObjective - RequiredLoanAmount,
-          io:fwrite("~w was only able to borrow ~w dollar(s). Boo Hoo!~n", [CustomerName, TotalLoanApproved])
+          MasterPid = whereis(masterprocess),
+          MasterPid ! {didnotreachobjective, CustomerName, TotalLoanApproved}
+%%          io:fwrite("~w was only able to borrow ~w dollar(s). Boo Hoo!~n", [CustomerName, TotalLoanApproved])
       end
   end.

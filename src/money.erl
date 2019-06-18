@@ -10,19 +10,42 @@
 -author("Samir").
 
 %% API
--export([master/0, printTable/1, printTable/2]).
+-export([start/0, startReceivingFeedback/0]).
 
-master() ->
+%%start() ->
+%%  master().start() ->
+%%  master().
+
+start() ->
   register(master, self()),
+  Pid = spawn(money, startReceivingFeedback, []),
+  register(masterprocess, Pid),
   customer:initCustomers(),
   bank:initBanks(),
-  customer:iteratorCustomerTable(customertable),
-  timer:sleep(1000),
-  bank:printBankBalance(banktable).
-%%  printTable(customertable),
-%%  printTable(banktable).
+  customer:iteratorCustomerTable(customertable).
+%%  timer:sleep(1000),
+%%  bank:printBankBalance(banktable).
 
-
+startReceivingFeedback() ->
+  receive
+    {loanrequest, CustomerName, Amount, TargetBankName} ->
+      io:fwrite("~w requested a loan of ~w dollar(s) from ~w~n", [CustomerName, Amount, TargetBankName]),
+      startReceivingFeedback();
+    {loangranted, TargetBankName, Amount, CustomerName} ->
+      io:fwrite("~w approves a loan of ~w dollars(s) for ~w~n", [TargetBankName, Amount, CustomerName]),
+      startReceivingFeedback();
+    {loanrejected, TargetBankName, Amount, CustomerName} ->
+      io:fwrite("~w denies a loan of ~w dollars from ~w~n", [TargetBankName, Amount, CustomerName]),
+      startReceivingFeedback();
+    {reachedobjective, CustomerName, LoanObjective} ->
+      io:fwrite("~w has reached the objective of ~w dollar(s). Woo Hoo!~n",[CustomerName, LoanObjective]),
+      startReceivingFeedback();
+    {didnotreachobjective, CustomerName, TotalLoanApproved} ->
+      io:fwrite("~w was only able to borrow ~w dollar(s). Boo Hoo!~n", [CustomerName, TotalLoanApproved]),
+      startReceivingFeedback()
+  after (1500) ->
+    bank:printBankBalance(banktable)
+  end.
 
 printTable(Table) ->
   printTable(Table, ets:first(Table)).
