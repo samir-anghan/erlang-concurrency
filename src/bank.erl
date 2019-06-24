@@ -41,7 +41,7 @@ generateBankProcess(Bank) ->
     {Sender, {Customer, Amount, TargetBank}} ->
       CustomerName = element(1,Customer),
       TargetBankName = element(1, TargetBank),
-      MasterPid = whereis(masterprocess),
+      MasterPid = whereis(master),
       MasterPid ! {loanrequest, CustomerName, Amount, TargetBankName},
 %%      io:fwrite("~w requested a loan of ~w dollar(s) from ~w~n", [element(1,Customer), Amount, element(1, TargetBank)]),
       FinancialResources = element(2, TargetBank),
@@ -62,13 +62,13 @@ processLoanRequest(Sender, Customer, Amount, TargetBank) ->
       NewRequiredLoanAmount = RequiredLoanAmount - Amount,
       ets:insert(banktable, {TargetBankName, NewBalance}),
       ets:insert(customertable, {CustomerName, NewRequiredLoanAmount}),
-      MasterPid = whereis(masterprocess),
+      MasterPid = whereis(master),
       MasterPid ! {loangranted, TargetBankName, Amount, CustomerName},
 %%      io:fwrite("~w approves a loan of ~w dollars(s) for ~w~n", [TargetBankName, Amount, element(1, Customer)]),
       if
         NewRequiredLoanAmount =< 0 ->
           LoanObjective = element(2, Customer),
-          MasterPid = whereis(masterprocess),
+          MasterPid = whereis(master),
           MasterPid ! {reachedobjective, CustomerName, LoanObjective};
 %%          io:fwrite("~w has reached the objective of ~w dollar(s). Woo Hoo!~n",[CustomerName, element(2, Customer)]);
         true ->
@@ -76,7 +76,7 @@ processLoanRequest(Sender, Customer, Amount, TargetBank) ->
       end,
       Sender ! loanapproved;
     true ->
-      MasterPid = whereis(masterprocess),
+      MasterPid = whereis(master),
       MasterPid ! {loanrejected, TargetBankName, Amount, CustomerName},
 %%      io:fwrite("~w denies a loan of ~w dollars from ~w~n", [TargetBankName, Amount, CustomerName]),
       Sender ! loannotapproved

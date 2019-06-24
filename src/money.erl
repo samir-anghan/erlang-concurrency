@@ -17,9 +17,9 @@
 %%  master().
 
 start() ->
-  register(master, self()),
+%%  register(master, self()),
   Pid = spawn(money, startReceivingFeedback, []),
-  register(masterprocess, Pid),
+  register(master, Pid),
   customer:initCustomers(),
   bank:initBanks(),
   customer:iteratorCustomerTable(customertable).
