@@ -12,19 +12,12 @@
 %% API
 -export([start/0, startReceivingFeedback/0]).
 
-%%start() ->
-%%  master().start() ->
-%%  master().
-
 start() ->
-%%  register(master, self()),
   Pid = spawn(money, startReceivingFeedback, []),
   register(master, Pid),
   customer:initCustomers(),
   bank:initBanks(),
   customer:iteratorCustomerTable(customertable).
-%%  timer:sleep(1000),
-%%  bank:printBankBalance(banktable).
 
 startReceivingFeedback() ->
   receive
@@ -46,11 +39,3 @@ startReceivingFeedback() ->
   after (1500) ->
     bank:printBankBalance(banktable)
   end.
-
-printTable(Table) ->
-  printTable(Table, ets:first(Table)).
-printTable(_Table, '$end_of_table') -> done;
-printTable(Table, Key) ->
-  io:format("~p: ~p~n", [Key, ets:lookup(Table, Key)]),
-  [Customer] = ets:lookup(Table, Key),
-  printTable(Table, ets:next(Table, Key)).

@@ -89,6 +89,5 @@ requestLoan(Customer, PotentialBanksList) ->
           TotalLoanApproved = OriginalLoanObjective - RequiredLoanAmount,
           MasterPid = whereis(master),
           MasterPid ! {didnotreachobjective, CustomerName, TotalLoanApproved}
-%%          io:fwrite("~w was only able to borrow ~w dollar(s). Boo Hoo!~n", [CustomerName, TotalLoanApproved])
       end
   end.
