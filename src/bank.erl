@@ -28,7 +28,6 @@ spawnBanks(Bank) ->
   FinancialResources = element(2, Bank),
   ets:insert(banktable, {Name, FinancialResources}),
   io:fwrite("~w: ~w~n", [Name, FinancialResources]),
-  timer:sleep(100),
   Pid = spawn(bank, generateBankProcess, [Bank]),
   register(element(1, Bank), Pid).
 
