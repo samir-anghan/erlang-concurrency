@@ -1,31 +1,7 @@
 # erlang-concurrency
-## COMP	6411:	PROJECT	DESCRIPTION
 
-### DESCRIPTION: 
-
-For	the	final	project,	we will	take	a	look	at	Erlang.	Note	that	while	Erlang	is	a	
-functional	language,	in	the	same	style	as	Clojure,	our	focus	here	is	the	concurrency	model	provided	
-by	Erlang.	In	particular,	this	assignment	will	require	you	to	gain	some	familiarity	with	the	concept	
-of	message	passing.	In	fact,	Erlang	does	this	more	effectively	than	any	other	modern	programming	
-language.
-
-That	said,	there	is	a	“twist”	with	the	project.	The	course	is	called	“Comparative	Programming	
-Languages”	for	a	reason.	The	purpose	is	not	just	to	learn	something	about	other	languages	but	to	
-get	a	better	sense	of	how	problems	can	be	solved	differently,	depending	on	the	language	used.	
-Often,	a	well-chosen	language	can	make	the	job	much	easier	and	much	more	intuitive.	
-
-So,	in	addition	to	implementing	the	application	in	Erlang,	you	will	implement	the	same	application	
-using	Java,	arguably	the	most	popular	imperative	language	in	use	today.	While	Java	will	be	far	more	
-comfortable	for	many	of	you,	it	is	a	general	purpose	language	that	was	not	designed	specifically	for	
-concurrency	(though	it	has	always	provided	support	for	this).
-
-In	short,	the project	emphasizes	the	“comparative”	element	in	the	course’s	title.		Note,	however,	
-that	this	does	not	mean	that	the	project	is	massive in	size.	The	application	itself	is	not	large,	so	
-neither	the	Erlang	program	nor	the	Java	program	will	require	a	huge	amount	of	source	code.	
-Instead,	you	will	have	to	look	at	the	problem	differently in	the	two	cases.
-
-
-DETAILS: In	the	description	below,	we	will	describe	the	project	in	terms	of	Erlang.	A	short	section	
+## DESCRIPTION
+In	the	description	below,	we	will	describe	the	project	in	terms	of	Erlang.	A	short	section	
 on	the	Java	version	will	be	given	at	the	end.
 
 Your	objective	is	to	model	a	simple	banking	environment.	Specifically,	you	will	be	given	a	small	
@@ -40,23 +16,19 @@ file	primitives	for	processing	disk	files,	the	process is	not	quite	as	simple	as
 function.	So	the	two	files	will	contain	records	that	are	already	pre-formatted.	In	other	words,	they	
 are ready	to	be	read	directly	into	standard	Erlang	data	structures.	
 
-An example	 _customers.txt_ file	would	be:
 
+```
+An example customers.txt file would be:
 {jill,450}.
-
 {joe,157}.
-
 {bob,100}.
-
 {sue,125}.
-
-An	example	 _banks.txt_ file	would	be:
-
+An example banks.txt file would be:
 {rbc,800}.
-
 {bmo,700}.
-
 {ing,200}.
+```
+
 
 In	other	words,	each	file	simply contains	a set	of	erlang	tuples.		You	will	see	that	each	label	is	
 associated	with	a	number.	For	customers,	this	is	the	total	funds	that	they	are	hoping	to	obtain.	For	
@@ -78,10 +50,9 @@ will	be,	or	even	their	names,	you	cannot	“hard	code”	this	phase	of	the	appli
 
 
 The	customer	and	bank	tasks	will	then	start	up	and	wait	for	contact	(you	may	want	to	make	each	
-new	task	sleep	for	a	100	milliseconds	or	so,	just	to	make	sure	that	all	tasks	have	been	created	and	
-are	ready	to	be	used).	So	the	banking	mechanism	works	as	follows:
+new	task	sleep	for	a	100	milliseconds	or	so,	just	to	make	sure	that	all	tasks	have	been	created	and are	ready	to	be	used).	So	the	banking	mechanism	works	as	follows:
 
-1. Each	customer	wants	to	borrow	the	amount	listed	in	the	input	file.	At	any	one	time,	
+1. Each	customer	wants	to	borrow	the	amount	listed	in	the	input	file. At	any	one	time,	
     however,	they	can	only	request	a	maximum	of	50	dollars.	When	they	make	a	request,	they	
     will	therefore	choose	a	random	dollar	amount between	1	and	50	for	their	current	loan.	
 2. When	they	make	a	request,	they	will	also	randomly	choose	one	of	the	banks	as	the	target.
@@ -106,8 +77,7 @@ And	that’s	it.
 Of	course,	we	need	a	way	to	demonstrate	that	all	of	this	has	worked	properly.	 To	begin,	it	is	
 important	to	understand	that	this	is	a	multi-process	Erlang	program.	The	“master”	process	will	be	
 the	initial	process	that,	in	turn, spawns	processes for	each	of	the	customers (the	master	process	is	
-like	the	class	containing	“main”	in	Java).	So,	in	our	little	example	above,	there	will	be	 8	 processes	in	
-total: the	master,	4	customers	and	3	banks.	
+like	the	class	containing	“main”	in	Java).	So,	in	our	little	example	above,	there	will	be	 8	 processes	in total: the	master,	4	customers	and	3	banks.	
 
 To	confirm	the	validity	of	the	program,	we	need	a	series	of	info	messages	to	be	printed	to	the	
 screen.	These	include:
@@ -118,12 +88,12 @@ screen.	These	include:
 4. Before	the	program	ends,	banks	will	indicate	their	remaining	funds.
 
 IMPORTANT: The	“master”	process	is	the	only	process	that	should	display	anything	to	the	screen.	
-So	all	info	must	be	sent	to	the	master	process,	where	it	will	be	displayed.	No	customer	or	bank	
-process	should	ever	print	anything.	
+So	all	info	must	be	sent	to	the	master	process,	where	it	will	be	displayed.	No	customer	or	bank process	should	ever	print	anything.	
 
 
 Below,	we	see	partial output	for	our	running example (including	input	data):
 
+```
 ** Customers and loan objectives **
 jill: 450
 joe: 157
@@ -156,6 +126,7 @@ bob has reached the objective of 100 dollar(s). Woo Hoo!
 jill has reached the objective of 450 dollar(s). Woo Hoo!
 ing has 5 dollar(s) remaining.
 sue was only able to borrow 98 dollar(s). Boo Hoo!
+```
 
 It	should	be	obvious	that	that	the	loan	requests	and	loan	decision	should	match	up,	though	you	
 should	keep	in	mind	that	the	actual	printing	can	occur	in	any	order.	
